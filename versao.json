@@ -1,12 +1,13 @@
 {
-  "versao": "1.5.0",
+  "versao": "1.6.0",
   "data": "2026-11-02",
   "novidades": [
-    "Visual novo: menu em grupos com ícones e avisos de pendências",
-    "Botão Nova venda em destaque (tecla F2)",
-    "Busca rápida de cliente em qualquer tela (Ctrl+K)",
-    "Início novo: números do dia e lista Para cobrar com WhatsApp",
-    "Celular: barra fixa embaixo e listas em cartões"
+    "Central de Atendimento ao Vivo do WhatsApp integrada no sistema com inbox de conversas",
+    "Assunção de atendimento por vendedores com 1 clique (Takeover humano e pausa do bot)",
+    "Interpretação inteligente de pedidos com IA para produtos físicos, variações e planos de adesão",
+    "Fila de pedidos do WhatsApp com confirmação e lançamento de vendas em 1 clique",
+    "Painel de Webhook com tutoriais passo a passo para Evolution API, Z-API, Meta Cloud API e N8N",
+    "Autenticação por Bearer Token e LocalStorage com suporte a iframes e telas embutidas"
   ],
-  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.5.0/Instalar-Gestao-do-Estudio.exe"
+  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.6.0/Instalar-Gestao-do-Estudio.exe"
 }

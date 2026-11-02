@@ -1,0 +1,6 @@
+{
+  "name": "Gestão do Estúdio",
+  "description": "Sistema completo de gestão de estúdios e academias: vendas (F2), cobrança WhatsApp, financeiro, clientes, estoque e filiais.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
