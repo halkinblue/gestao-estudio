@@ -1,11 +1,34 @@
 # Gestão do Estúdio
 
-Sistema completo de gestão de estúdios e academias: vendas (F2), cobrança WhatsApp, financeiro, clientes, estoque, filiais e Central de Atendimento & Pedidos via WhatsApp.
+Sistema de gestão para estúdios, academias e studios de treino: vendas, planos, clientes, estoque, agenda, cobrança pelo WhatsApp, relatórios e rede de unidades. Roda no Windows, com banco de dados incluído, e pode ser usado no celular pelo Wi-Fi.
 
-## Novidades da Versão 1.6.0
-- **Central de Atendimento WhatsApp ao Vivo:** Inbox de mensagens integrada diretamente na aplicação.
-- **Assunção por Vendedores (Takeover):** Qualquer vendedor pode assumir o atendimento ao vivo de um cliente com 1 clique.
-- **Interpretação Inteligente de Pedidos:** Reconhecimento automático de produtos, variações (tamanho/cor) e planos de assinatura, calculando valores e gerando respostas prontas com Chave PIX.
-- **Fila de Pedidos & Faturamento com 1 Clique:** Criação de vendas, baixa de estoque e lançamento de pagamentos instantâneos.
-- **Painel de Webhook & Tutoriais:** Guias passo a passo para Evolution API, Z-API, Meta Cloud API e N8N.
-- **Autenticação Avançada:** Suporte a Bearer Token e LocalStorage para iframes e aplicativos embutidos.
+**Versão atual: 1.7.0**
+
+## Baixar e instalar
+
+1. Baixe o **Instalar-Gestao-do-Estudio.exe** na [página da versão mais recente](https://github.com/halkinblue/gestao-estudio/releases/latest).
+2. Dê dois cliques. Se o Windows mostrar "O Windows protegeu o computador", clique em **Mais informações → Executar assim mesmo**.
+3. Siga as telas: nome do negócio, administrador, serviços e backup.
+
+**Já usa o sistema?** Rode o instalador novo normalmente: ele atualiza e mantém todos os dados. A partir da 1.7.0, o próprio sistema avisa quando houver versão nova e atualiza com o botão **Atualizar agora**.
+
+## Novidades da versão 1.7.0
+
+- **Agenda e turmas:** vagas por turma, dias da semana, presença e faltas, remarcação e avisos prontos para o WhatsApp do aluno.
+- **Pedidos pelo WhatsApp:** cole a mensagem do cliente e o sistema entende o pedido (planos e produtos), calcula o valor e prepara a resposta com a chave PIX. A venda é concluída na tela Nova venda, já preenchida.
+- **Leitura com inteligência artificial (opcional):** com uma chave do Google Gemini, entende frases mais soltas. Os valores são sempre calculados pelo sistema.
+- **Atualização automática** com um clique, com conferência de segurança do arquivo.
+
+## Principais recursos
+
+- Planos mensal a anual com desconto, Dupla, desconto na hora e parcelamento em até 12x com juros da maquininha
+- Estoque com tamanho e cor, entrada de mercadoria e aviso de estoque baixo
+- Início com os números do dia e lista "Para cobrar" com cobrança pelo WhatsApp
+- Recibos para imprimir ou enviar pelo WhatsApp
+- Relatórios, despesas e lucro, rede de unidades (matriz e filiais)
+- Backup criptografado no Google Drive e mudança de computador pelo instalador
+- Modo noturno, logo e cores do negócio, uso no celular com ícone na tela inicial
+
+## Histórico de versões
+
+As versões e seus instaladores ficam na página [Releases](https://github.com/halkinblue/gestao-estudio/releases).
