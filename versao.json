@@ -1,13 +1,11 @@
 {
-  "versao": "1.7.0",
+  "versao": "1.7.1",
   "data": "2026-11-02",
   "novidades": [
-    "Agenda e turmas: vagas, dias da semana, presença e faltas, remarcação e avisos por WhatsApp",
-    "WhatsApp: leitura de pedidos com valor calculado e resposta pronta com PIX",
-    "Venda do pedido concluída na tela Nova venda, já preenchida",
-    "Leitura com inteligência artificial opcional",
-    "Atualização automática com um clique"
+    "Correção: a instalação não fica mais parada em \"Preparando o banco de dados\"",
+    "O sistema liga sem abrir janelas de comando",
+    "Agenda e turmas, pedidos pelo WhatsApp e atualização com um clique (da 1.7.0)"
   ],
-  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.7.0/Instalar-Gestao-do-Estudio.exe",
-  "sha256": "30bc1968d248260033c2eb9e6fca890c3830a1ad490605d5dfe54c7de1b21ccf"
+  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.7.1/Instalar-Gestao-do-Estudio.exe",
+  "sha256": "4a30a07e3e94e5e7ffaa6d22f9f096d4a7edcfec306a2946c49d4e2e2f8d01c1"
 }
