@@ -219,7 +219,7 @@ function telaTrocarSenhaObrigatoria() {
 // ---------- estrutura principal ----------
 // menu em grupos: [título, [[rota, nome, ícone, só administrador]]]
 const MENU = [
-  ['Dia a dia', [['inicio', 'Início', 'inicio'], ['whatsapp', 'WhatsApp Pedidos', 'whats'], ['clientes', 'Clientes', 'clientes'], ['pagamentos', 'Pagamentos', 'pagamentos'], ['assinaturas', 'Assinaturas', 'assinaturas']]],
+  ['Dia a dia', [['inicio', 'Início', 'inicio'], ['agenda', 'Agenda & Turmas', 'cal'], ['whatsapp', 'WhatsApp Pedidos', 'whats'], ['clientes', 'Clientes', 'clientes'], ['pagamentos', 'Pagamentos', 'pagamentos'], ['assinaturas', 'Assinaturas', 'assinaturas']]],
   ['Cadastros', [['produtos', 'Produtos e preços', 'produtos', true], ['planos', 'Planos', 'planos', true], ['estoque', 'Estoque', 'estoque']]],
   ['Gestão', [['relatorios', 'Relatórios', 'relatorios', true], ['despesas', 'Despesas', 'despesas', true], ['unidades', 'Unidades', 'unidades', true]]],
   ['Sistema', [['usuarios', 'Usuários', 'usuarios', true], ['backup', 'Backup', 'backup', true], ['auditoria', 'Auditoria', 'auditoria', true], ['aparencia', 'Aparência', 'aparencia', true]]],
@@ -348,7 +348,7 @@ async function rotear() {
   const [rota, id] = caminho.split('/');
   const params = new URLSearchParams(busca || '');
   document.querySelectorAll('[data-menu]').forEach(a => a.classList.toggle('ativo', a.dataset.menu === rota));
-  const telas = { inicio: telaInicio, whatsapp: telaWhatsApp, clientes: id ? () => telaFicha(id) : telaClientes, produtos: telaProdutos, planos: telaPlanos, usuarios: telaUsuarios,
+  const telas = { inicio: telaInicio, agenda: telaAgenda, whatsapp: telaWhatsApp, clientes: id ? () => telaFicha(id) : telaClientes, produtos: telaProdutos, planos: telaPlanos, usuarios: telaUsuarios,
     venda: () => telaVenda(params), assinaturas: telaAssinaturas, pagamentos: telaPagamentos, estoque: telaEstoque,
     relatorios: telaRelatorios, backup: telaBackup, auditoria: telaAuditoria, aparencia: telaAparencia, despesas: telaDespesas, unidades: () => telaUnidades() };
   const fn = telas[rota] || telaInicio;

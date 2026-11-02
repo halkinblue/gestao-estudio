@@ -37599,7 +37599,7 @@ app.post("/api/rede/desligar", admin, rota(async (req, res) => {
   await auditar(req.usuario.id, "rede de unidades desligada neste computador", "configuracoes", null, null, null);
   res.json({ ok: true });
 }));
-var VERSAO_SISTEMA = "1.6.0";
+var VERSAO_SISTEMA = "1.7.0";
 var URL_ATUALIZACAO_PADRAO = "https://raw.githubusercontent.com/halkinblue/gestao-estudio/main/versao.json";
 var { PNG } = require_png();
 var jpeg = require_jpeg_js();
@@ -38409,6 +38409,178 @@ port = ${portaPg}
   await pool.end();
   console.log(`Instala\xE7\xE3o conclu\xEDda. Endere\xE7o do sistema: http://localhost:${cfg.porta}`);
 }
+
+// --- ROTAS DA AGENDA E TURMAS ---
+app.get("/api/turmas", logado, rota(async (req, res) => {
+  const r = await q(`
+    SELECT t.*, p.nome AS produto_nome, u.nome AS instrutor_nome, un.nome AS unidade_nome,
+      (SELECT count(*) FROM agendamentos a WHERE a.turma_id = t.id AND a.data = current_date AND a.situacao != 'cancelado') AS alunos_hoje
+    FROM turmas t
+    LEFT JOIN produtos p ON p.id = t.produto_id
+    LEFT JOIN usuarios u ON u.id = t.instrutor_id
+    LEFT JOIN unidades un ON un.id = t.unidade_id
+    WHERE t.ativa
+    ORDER BY t.horario_inicio ASC
+  `);
+  res.json(r.rows);
+}));
+
+app.post("/api/turmas", logado, rota(async (req, res) => {
+  const { nome, produto_id, instrutor_id, unidade_id, dias_semana, horario_inicio, horario_fim, vagas_maximas, sala } = req.body;
+  if (!nome || !horario_inicio || !horario_fim) throw erro(400, "Preencha nome e horários da turma.");
+  const unId = unidade_id || (await q("SELECT id FROM unidades LIMIT 1")).rows[0]?.id;
+  const r = await q(`
+    INSERT INTO turmas (nome, produto_id, instrutor_id, unidade_id, dias_semana, horario_inicio, horario_fim, vagas_maximas, sala)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING *
+  `, [nome, produto_id || null, instrutor_id || null, unId, dias_semana || ['seg', 'qua', 'sex'], horario_inicio, horario_fim, vagas_maximas || 15, sala || "Sala Principal"]);
+  res.json(r.rows[0]);
+}));
+
+app.get("/api/agenda", logado, rota(async (req, res) => {
+  const data = req.query.data || new Date().toISOString().slice(0, 10);
+  
+  const turmasRes = await q(`
+    SELECT t.*, p.nome AS produto_nome, u.nome AS instrutor_nome,
+      (SELECT count(*) FROM agendamentos a WHERE a.turma_id = t.id AND a.data = $1 AND a.situacao != 'cancelado') AS total_inscritos
+    FROM turmas t
+    LEFT JOIN produtos p ON p.id = t.produto_id
+    LEFT JOIN usuarios u ON u.id = t.instrutor_id
+    WHERE t.ativa
+    ORDER BY t.horario_inicio ASC
+  `, [data]);
+
+  const agendamentosRes = await q(`
+    SELECT a.*, c.nome AS cliente_nome, c.telefone AS cliente_telefone, c.cpf AS cliente_cpf,
+      p.nome AS produto_nome, u.nome AS profissional_nome, t.nome AS turma_nome
+    FROM agendamentos a
+    JOIN clientes c ON c.id = a.cliente_id
+    LEFT JOIN produtos p ON p.id = a.produto_id
+    LEFT JOIN usuarios u ON u.id = a.profissional_id
+    LEFT JOIN turmas t ON t.id = a.turma_id
+    WHERE a.data = $1
+    ORDER BY a.horario_inicio ASC, a.criado_em ASC
+  `, [data]);
+
+  res.json({
+    data,
+    turmas: turmasRes.rows,
+    agendamentos: agendamentosRes.rows
+  });
+}));
+
+app.post("/api/agenda/agendar", logado, rota(async (req, res) => {
+  const { tipo, turma_id, produto_id, cliente_id, profissional_id, unidade_id, data, horario_inicio, horario_fim, observacao } = req.body;
+  if (!cliente_id || !data) throw erro(400, "Selecione o aluno e a data do agendamento.");
+
+  let hInicio = horario_inicio;
+  let hFim = horario_fim;
+  let prodId = produto_id;
+  let unId = unidade_id || (await q("SELECT id FROM unidades LIMIT 1")).rows[0]?.id;
+
+  if (tipo === 'turma' && turma_id) {
+    const t = (await q("SELECT * FROM turmas WHERE id=$1", [turma_id])).rows[0];
+    if (!t) throw erro(404, "Turma não encontrada.");
+    hInicio = hInicio || t.horario_inicio;
+    hFim = hFim || t.horario_fim;
+    prodId = prodId || t.produto_id;
+
+    const inscritos = parseInt((await q("SELECT count(*) FROM agendamentos WHERE turma_id=$1 AND data=$2 AND situacao != 'cancelado'", [turma_id, data])).rows[0].count, 10);
+    if (inscritos >= t.vagas_maximas) {
+      throw erro(400, `Esta turma atingiu a capacidade máxima de ${t.vagas_maximas} vagas.`);
+    }
+  }
+
+  const r = await q(`
+    INSERT INTO agendamentos (tipo, turma_id, produto_id, cliente_id, profissional_id, unidade_id, data, horario_inicio, horario_fim, observacao, criado_por)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *
+  `, [tipo || 'turma', turma_id || null, prodId || null, cliente_id, profissional_id || null, unId, data, hInicio || "08:00", hFim || "09:00", observacao || null, req.usuario.id]);
+
+  res.json(r.rows[0]);
+}));
+
+app.put("/api/agenda/:id/remarcar", logado, rota(async (req, res) => {
+  const { nova_data, novo_horario_inicio, novo_horario_fim, motivo } = req.body;
+  if (!nova_data || !novo_horario_inicio) throw erro(400, "Informe a nova data e horário.");
+
+  const ag = (await q(`
+    SELECT a.*, c.nome AS cliente_nome, c.telefone AS cliente_telefone, p.nome AS produto_nome, t.nome AS turma_nome
+    FROM agendamentos a
+    JOIN clientes c ON c.id = a.cliente_id
+    LEFT JOIN produtos p ON p.id = a.produto_id
+    LEFT JOIN turmas t ON t.id = a.turma_id
+    WHERE a.id = $1
+  `, [req.params.id])).rows[0];
+  if (!ag) throw erro(404, "Agendamento não encontrado.");
+
+  await q(`
+    UPDATE agendamentos
+    SET data=$1, horario_inicio=$2, horario_fim=$3, motivo_alteracao=$4, situacao='remarcado'
+    WHERE id=$5
+  `, [nova_data, novo_horario_inicio, novo_horario_fim || novo_horario_inicio, motivo || null, req.params.id]);
+
+  const nomeServico = ag.turma_nome || ag.produto_nome || "sua aula";
+  const dataFmt = new Date(nova_data + "T12:00:00").toLocaleDateString("pt-BR");
+  const msgWhats = `Olá, *${ag.cliente_nome.split(" ")[0]}*! Passando para informar que sua aula/sessão de *${nomeServico}* foi remarcada para o dia *${dataFmt}* às *${novo_horario_inicio.slice(0, 5)}*.` +
+    (motivo ? `\n\n📌 *Motivo:* ${motivo}` : "") +
+    `\n\nQualquer dúvida ou caso precise ajustar o horário, basta nos responder por aqui! 🙌`;
+
+  res.json({
+    ok: true,
+    mensagem_whatsapp: msgWhats,
+    telefone: ag.cliente_telefone,
+    cliente_nome: ag.cliente_nome
+  });
+}));
+
+app.post("/api/agenda/:id/situacao", logado, rota(async (req, res) => {
+  const { situacao, motivo } = req.body;
+  if (!['agendado', 'concluido', 'falta', 'cancelado', 'remarcado'].includes(situacao)) throw erro(400, "Situação inválida.");
+  await q("UPDATE agendamentos SET situacao=$1, motivo_alteracao=$2 WHERE id=$3", [situacao, motivo || null, req.params.id]);
+  res.json({ ok: true });
+}));
+
+app.post("/api/agenda/turma/:id/notificar-intercorrencia", logado, rota(async (req, res) => {
+  const { data, motivo, novo_horario, cancelada } = req.body;
+  const t = (await q("SELECT t.*, p.nome AS produto_nome FROM turmas t LEFT JOIN produtos p ON p.id=t.produto_id WHERE t.id=$1", [req.params.id])).rows[0];
+  if (!t) throw erro(404, "Turma não encontrada.");
+
+  const alunos = (await q(`
+    SELECT a.id AS agendamento_id, c.nome, c.telefone
+    FROM agendamentos a
+    JOIN clientes c ON c.id = a.cliente_id
+    WHERE a.turma_id = $1 AND a.data = $2 AND a.situacao != 'cancelado'
+  `, [req.params.id, data])).rows;
+
+  if (cancelada) {
+    await q("UPDATE agendamentos SET situacao='cancelado', motivo_alteracao=$1 WHERE turma_id=$2 AND data=$3", [motivo || "Cancelamento de aula", req.params.id, data]);
+  } else if (novo_horario) {
+    await q("UPDATE agendamentos SET horario_inicio=$1, situacao='remarcado', motivo_alteracao=$2 WHERE turma_id=$3 AND data=$4", [novo_horario, motivo || "Mudança de horário", req.params.id, data]);
+  }
+
+  const dataFmt = new Date(data + "T12:00:00").toLocaleDateString("pt-BR");
+  const listaNotificacoes = alunos.map(al => {
+    let msg = `Olá, *${al.nome.split(" ")[0]}*! Comunicado importante do *${t.nome}* para hoje (${dataFmt}):\n\n`;
+    if (cancelada) {
+      msg += `Infelizmente a aula precisou ser *cancelada* hoje.` + (motivo ? `\n\n📌 *Motivo:* ${motivo}` : "") + `\n\nEssa aula já foi liberada para reposição. Pedimos desculpas pelo imprevisto!`;
+    } else {
+      msg += `A aula de hoje precisou ter seu horário alterado para as *${novo_horario}*.` + (motivo ? `\n\n📌 *Motivo:* ${motivo}` : "") + `\n\nContamos com sua presença!`;
+    }
+    return {
+      cliente_nome: al.nome,
+      telefone: al.telefone,
+      mensagem: msg,
+      link_whatsapp: `https://wa.me/${(al.telefone || "").replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`
+    };
+  });
+
+  res.json({
+    turma: t.nome,
+    total_alunos: alunos.length,
+    notificacoes: listaNotificacoes
+  });
+}));
 
 const whatsappService = require("./whatsapp-service.cjs");
 
