@@ -2,7 +2,7 @@
 
 Sistema de gestão para estúdios, academias e studios de treino: vendas, planos, clientes, estoque, agenda, cobrança pelo WhatsApp, relatórios e rede de unidades. Roda no Windows, com banco de dados incluído, e pode ser usado no celular pelo Wi-Fi.
 
-**Versão atual: 1.7.0**
+**Versão atual: 1.7.1**
 
 ## Baixar e instalar
 
@@ -11,6 +11,12 @@ Sistema de gestão para estúdios, academias e studios de treino: vendas, planos
 3. Siga as telas: nome do negócio, administrador, serviços e backup.
 
 **Já usa o sistema?** Rode o instalador novo normalmente: ele atualiza e mantém todos os dados. A partir da 1.7.0, o próprio sistema avisa quando houver versão nova e atualiza com o botão **Atualizar agora**.
+
+## Correções da versão 1.7.1
+
+- A instalação não fica mais parada na etapa "Preparando o banco de dados".
+- O sistema liga sem abrir janelas de comando.
+- Se uma instalação for interrompida, rodar o instalador de novo continua de onde parou.
 
 ## Novidades da versão 1.7.0
 
