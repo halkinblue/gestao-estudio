@@ -1,11 +1,12 @@
 {
-  "versao": "1.7.1",
+  "versao": "1.8.0",
   "data": "2026-11-02",
   "novidades": [
-    "Correção: a instalação não fica mais parada em \"Preparando o banco de dados\"",
-    "O sistema liga sem abrir janelas de comando",
-    "Agenda e turmas, pedidos pelo WhatsApp e atualização com um clique (da 1.7.0)"
+    "Manter conectado neste aparelho por 30 dias (o login não cai quando o computador reinicia)",
+    "Aparelhos conectados: veja e desconecte celulares e computadores",
+    "Aviso quando o endereço do computador na rede muda",
+    "Botão Desligar o sistema dentro do sistema"
   ],
-  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.7.1/Instalar-Gestao-do-Estudio.exe",
-  "sha256": "4a30a07e3e94e5e7ffaa6d22f9f096d4a7edcfec306a2946c49d4e2e2f8d01c1"
+  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.8.0/Instalar-Gestao-do-Estudio.exe",
+  "sha256": "ce508c6f7ec155ee1c94235517370075bf4894a7d1c2c8eea112c73e07d412bb"
 }
