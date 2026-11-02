@@ -1,12 +1,12 @@
 {
-  "versao": "1.4.0",
+  "versao": "1.5.0",
   "data": "2026-11-02",
   "novidades": [
-    "Assistente para ligar matriz e filiais, com convite pelo WhatsApp",
-    "Painel mostrando quais unidades estão conectadas",
-    "Mudança de computador: o instalador traz os dados do backup do Google Drive",
-    "Aviso quando a mesma unidade é usada em dois computadores",
-    "Correção: restaurar backup em computador novo traz também as despesas"
+    "Visual novo: menu em grupos com ícones e avisos de pendências",
+    "Botão Nova venda em destaque (tecla F2)",
+    "Busca rápida de cliente em qualquer tela (Ctrl+K)",
+    "Início novo: números do dia e lista Para cobrar com WhatsApp",
+    "Celular: barra fixa embaixo e listas em cartões"
   ],
-  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.4.0/Instalar-Gestao-do-Estudio.exe"
+  "download": "https://github.com/halkinblue/gestao-estudio/releases/download/v1.5.0/Instalar-Gestao-do-Estudio.exe"
 }
